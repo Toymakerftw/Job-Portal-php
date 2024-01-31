@@ -7,8 +7,9 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'employer') {
   exit();
 }
 
-if (isset($_GET['applicant_id'])) {
+if (isset($_GET['applicant_id']) && isset($_GET['job_id'])) {
   $applicantId = $_GET['applicant_id'];
+  $jobId = $_GET['job_id']; // Add code to retrieve the job ID from the form
 
   // Connect to the database
   $servername = "localhost";
@@ -38,6 +39,22 @@ if (isset($_GET['applicant_id'])) {
     echo "<p>Experience: " . $applicant['experience'] . "</p>";
     echo "<p>Expected Salary: " . $applicant['salary'] . "</p>";
     // You can add more details as per your database schema
+    echo "<a href='" . $applicant['resume_path'] . "' download>Download Resume</a>";
+
+  // Add a button to reject the applicant
+  echo "<form action='reject_applicant.php' method='post'>";
+  echo "<input type='hidden' name='applicant_id' value='" . $applicant['id'] . "'>";
+  echo "<input type='hidden' name='job_id' value='" . $jobId . "'>"; // Add hidden input for job ID
+  echo "<input type='submit' value='Reject Applicant'>";
+  echo "</form>";
+
+  // Add a button to shortlist the applicant
+  echo "<form action='shortlist_applicant.php' method='post'>";
+  echo "<input type='hidden' name='applicant_id' value='" . $applicant['id'] . "'>";
+  echo "<input type='hidden' name='job_id' value='" . $jobId . "'>"; // Add hidden input for job ID
+  echo "<input type='submit' value='Shortlist Applicant'>";
+  echo "</form>";
+
   } else {
     echo "Applicant details not found";
   }

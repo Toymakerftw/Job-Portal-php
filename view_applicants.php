@@ -33,7 +33,7 @@ if (isset($_GET['job_id'])) {
       $applicantNameSql = "SELECT username FROM users WHERE id = $applicantId";
       $applicantNameResult = $conn->query($applicantNameSql);
       $applicantName = $applicantNameResult->fetch_assoc()["username"];
-      echo "<li><a href='view_applicant_details.php?applicant_id=$applicantId'>$applicantName</a></li>";
+      echo "<li><a href='view_applicant_details.php?applicant_id=$applicantId&job_id=$jobId'>$applicantName</a></li>"; // Pass job ID to view_applicant_details.php
     }
     echo "</ul>";
   } else {
