@@ -56,6 +56,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'applicant') {
   <ul>
     <li><a href="applicant_view_jobs.php">View Jobs</a></li>
     <li><a href="applicant_details.php">Add/Edit Details</a></li>
+    <li><a href="job_status.php">View Jobs Status</a></li>
   </ul>
 
 </body>
