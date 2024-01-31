@@ -48,21 +48,30 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
   <title>Add Job</title>
 </head>
-<body>
-  <div class="container">
-    <h2>Add Job</h2>
-    <form id="addJobForm" action="add_job.php" method="post">
-      <input type="text" id="title" name="title" placeholder="Title" required>
-      <input type="text" id="skill" name="skill" placeholder="Skill" required>
-      <input type="number" id="salary" name="salary" placeholder="Salary" required>
-      <input type="text" id="duration" name="duration" placeholder="Duration" required>
-      <input type="text" id="location" name="location" placeholder="Location" required>
-      <textarea id="details" name="details" placeholder="Details" required></textarea>
-      <button type="submit">Add Job</button>
-    </form>
+<body class="bg-gray-100">
+  <div class="container mx-auto mt-8">
+    <div class="bg-white p-8 rounded shadow-md">
+      <h2 class="text-2xl font-semibold mb-4">Add Job</h2>
+      <form id="addJobForm" action="add_job.php" method="post" class="space-y-4">
+        <input type="text" id="title" name="title" placeholder="Title" required
+               class="w-full px-4 py-2 border rounded focus:outline-none focus:border-black">
+        <input type="text" id="skill" name="skill" placeholder="Skill" required
+               class="w-full px-4 py-2 border rounded focus:outline-none focus:border-black">
+        <input type="number" id="salary" name="salary" placeholder="Salary" required
+               class="w-full px-4 py-2 border rounded focus:outline-none focus:border-black">
+        <input type="text" id="duration" name="duration" placeholder="Duration" required
+               class="w-full px-4 py-2 border rounded focus:outline-none focus:border-black">
+        <input type="text" id="location" name="location" placeholder="Location" required
+               class="w-full px-4 py-2 border rounded focus:outline-none focus:border-black">
+        <textarea id="details" name="details" placeholder="Details" required
+                  class="w-full px-4 py-2 border rounded focus:outline-none focus:border-black"></textarea>
+        <button type="submit" class="w-full bg-black text-white p-2 rounded hover:bg-gray-800">Add Job</button>
+      </form>
+    </div>
   </div>
   <script src="script.js"></script>
 </body>
