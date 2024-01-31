@@ -22,7 +22,8 @@ if (isset($_GET['job_id'])) {
   }
 
   // Query to fetch applicants for the selected job
-  $applicantsSql = "SELECT * FROM applications WHERE job_id = $jobId";
+  //$applicantsSql = "SELECT * FROM applications WHERE job_id = $jobId";
+  $applicantsSql = "SELECT * FROM applications WHERE job_id = $jobId AND status != 'rejected'";
   $applicantsResult = $conn->query($applicantsSql);
 
   if ($applicantsResult->num_rows > 0) {

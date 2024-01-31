@@ -63,7 +63,8 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'employer') {
 
             // Query to fetch applicants for the current job
             $jobId = $row["id"];
-            $applicantsSql = "SELECT * FROM applications WHERE job_id = $jobId";
+            //$applicantsSql = "SELECT * FROM applications WHERE job_id = $jobId";
+            $applicantsSql = "SELECT * FROM applications WHERE job_id = $jobId AND status != 'rejected'";
             $applicantsResult = $conn->query($applicantsSql);
 
             if ($applicantsResult->num_rows > 0) {
