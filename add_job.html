@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles.css">
+  <title>Add Job</title>
+</head>
+<body>
+  <div class="container">
+    <h2>Add Job</h2>
+    <form id="addJobForm" action="add_job.php" method="post">
+      <input type="text" id="title" name="title" placeholder="Title" required>
+      <input type="text" id="skill" name="skill" placeholder="Skill" required>
+      <input type="number" id="salary" name="salary" placeholder="Salary" required>
+      <input type="text" id="duration" name="duration" placeholder="Duration" required>
+      <input type="text" id="location" name="location" placeholder="Location" required>
+      <textarea id="details" name="details" placeholder="Details" required></textarea>
+      <button type="submit">Add Job</button>
+    </form>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
