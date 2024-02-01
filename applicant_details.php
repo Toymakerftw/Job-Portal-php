@@ -138,12 +138,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             <div class="mb-4 filelabel">
                 <label for="resume" class="block text-gray-700">Upload Resume</label>
-                <input type="file" id="resume" name="resume" class="w-full px-4 py-2 border rounded focus:outline-none focus:border-black" placeholder="Upload Resume" required>
+                <input type="file" id="resume" name="resume" class="w-full px-4 py-2 border rounded focus:outline-none focus:border-black" placeholder="Upload Resume" required onchange="validateFileUpload('resume')">
             </div>
 
             <div class="mb-4 filelabel">
                 <label for="picture" class="block text-gray-700">Upload Picture</label>
-                <input type="file" id="picture" name="picture" class="w-full px-4 py-2 border rounded focus:outline-none focus:border-black" placeholder="Upload Picture" required>
+                <input type="file" id="picture" name="picture" class="w-full px-4 py-2 border rounded focus:outline-none focus:border-black" placeholder="Upload Picture" required onchange="validateFileUpload('picture')">
             </div>
 
             <div class="mb-4">
@@ -152,32 +152,56 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </form>
     </div>
     <script>
-        $(document).ready(function() {
-          $('#updateApplicantdetailsForm').submit(function(e) {
-            e.preventDefault();
-            var formData = $(this).serialize();
+        function validateFileUpload(inputId) {
+    var fileInput = document.getElementById(inputId);
+    var filePath = fileInput.value;
+    var allowedExtensions = /(\.pdf|\.docx|\.jpg|\.jpeg|\.png)$/i;
+
+    if (!allowedExtensions.exec(filePath)) {
+        // Display an alert or customize the error handling as needed
+        alert('Invalid file type. Allowed file types: PDF, DOCX, JPG, JPEG, PNG.');
+        fileInput.value = ''; // Clear the file input
+        return false;
+    }
+    return true;
+}
+
+$(document).ready(function() {
+    $('#updateApplicantdetailsForm').submit(function(e) {
+        e.preventDefault();
+
+        // Validate file uploads before submitting the form
+        var isResumeValid = validateFileUpload('resume');
+        var isPictureValid = validateFileUpload('picture');
+
+        if (isResumeValid && isPictureValid) {
+            var formData = new FormData(this);
 
             $.ajax({
-              type: 'POST',
-              url: 'applicant_details.php',
-              data: formData,
-              success: function(response) {
-            // Display a toast message for success
-            Toastify({
-              text: "Success! Details Updated",
-              duration: 3000,
-              gravity: "bottom", // Add the toast message at the bottom of the page
-              position: 'right', // Position the toast message on the right side
-              backgroundColor: "green", // Set the background color of the toast message
-            }).showToast();
-              },
-              error: function() {
-                alert('An error occurred while updating the job.');
-              }
+                type: 'POST',
+                url: 'applicant_details.php',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    // Display a toast message for success
+                    Toastify({
+                        text: "Success! Details Updated",
+                        duration: 3000,
+                        gravity: "bottom",
+                        position: 'right',
+                        backgroundColor: "green"
+                    }).showToast();
+                },
+                error: function() {
+                    alert('An error occurred while updating the job.');
+                }
             });
-          });
-        });
-      </script>
+        }
+    });
+});
+
+    </script>
 
 </body>
 
