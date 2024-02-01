@@ -19,9 +19,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   $pictureTargetDir = "pictures/";
   $pictureTargetFile = $pictureTargetDir . basename($pictureName);
 
-  // Move uploaded files to the target directory
-  move_uploaded_file($resumeTmpName, $resumeTargetFile);
-  move_uploaded_file($pictureTmpName, $pictureTargetFile);
+  // Generate unique names for resume and picture files
+  $applicantId = uniqid();
+  $currentDate = date("YmdHis");
+  $resumeNewName = $applicantId . "-" . $currentDate . "-resume." . pathinfo($resumeName, PATHINFO_EXTENSION);
+  $pictureNewName = $applicantId . "-" . $currentDate . "-picture." . pathinfo($pictureName, PATHINFO_EXTENSION);
+
+  // Move uploaded files to the target directory with the new names
+  move_uploaded_file($resumeTmpName, $resumeTargetDir . $resumeNewName);
+  move_uploaded_file($pictureTmpName, $pictureTargetDir . $pictureNewName);
 
   // Store the applicant details and file paths in the database
   $servername = "localhost";
@@ -37,7 +43,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     die("Connection failed: " . $conn->connect_error);
   }
 
-  $sql = "INSERT INTO applicants (name, address, email, phone, qualification, certifications, experience, salary, resume_path, picture_path) VALUES ('$name', '$address', '$email', '$phone', '$qualification', '$certifications', '$experience', '$salary', '$resumeTargetFile', '$pictureTargetFile')";
+  $sql = "INSERT INTO applicants (name, address, email, phone, qualification, certifications, experience, salary, resume_path, picture_path) VALUES ('$name', '$address', '$email', '$phone', '$qualification', '$certifications', '$experience', '$salary', '$resumeTargetDir$resumeNewName', '$pictureTargetDir$pictureNewName')";
 
   if ($conn->query($sql) === TRUE) {
     echo "Applicant details submitted successfully";

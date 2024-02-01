@@ -55,11 +55,13 @@
                 <input type="text" id="salary" name="salary" class="w-full px-4 py-2 border rounded focus:outline-none focus:border-black" placeholder="Expected Salary" required>
             </div>
 
-            <div class="mb-4">
+            <div class="mb-4 filelabel">
+                <label for="resume" class="block text-gray-700">Upload Resume</label>
                 <input type="file" id="resume" name="resume" class="w-full px-4 py-2 border rounded focus:outline-none focus:border-black" placeholder="Upload Resume" required>
             </div>
 
-            <div class="mb-4">
+            <div class="mb-4 filelabel">
+                <label for="picture" class="block text-gray-700">Upload Picture</label>
                 <input type="file" id="picture" name="picture" class="w-full px-4 py-2 border rounded focus:outline-none focus:border-black" placeholder="Upload Picture" required>
             </div>
 
