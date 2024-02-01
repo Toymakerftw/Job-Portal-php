@@ -63,7 +63,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'employer') {
               echo "<td class='py-2 px-4 border-b'>" . $row["location"] . "</td>";
               echo "<td class='py-2 px-4 border-b'>" . $row["details"] . "</td>";
               echo "<td class='py-2 px-4 border-b flex'>
-                      <a href='delete_job.php?id=" . $row["id"] . "' class='text-white-500 hover:bg-gray-800 p-2 rounded inline-block bg-black text-white px-3 py-1 mr-2'>Delete</a>
+                      <a href='#' class='delete-job text-white-500 hover:bg-gray-800 p-2 rounded inline-block bg-black text-white px-3 py-1 mr-5' data-job-id='" . $row["id"] . "'>Delete</a>
                       <a href='update_job.php?id=" . $row["id"] . "' class='text-white-500 hover:bg-gray-800 p-2 rounded inline-block bg-black text-white px-3 py-1'>Update</a>
                     </td>";
               echo "<td class='py-2 px-4 border-b'>";
@@ -92,5 +92,32 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'employer') {
       </tbody>
     </table>
   </div>
+
+  <!-- Add the jQuery library -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+  <script>
+  $(document).ready(function() {
+    $('.delete-job').on('click', function(e) {
+      e.preventDefault();
+      var jobId = $(this).data('job-id');
+      var row = $(this).closest('tr'); // Get the row of the job to be deleted
+
+      $.ajax({
+        type: 'GET',
+        url: 'delete_job.php',
+        data: { id: jobId },
+        success: function(response) {
+          alert(response); // Display the server's response (you can replace this with your own UI update logic)
+          row.remove(); // Remove the deleted job from the table
+        },
+        error: function() {
+          alert('An error occurred while deleting the job.');
+        }
+      });
+    });
+  });
+</script>
+
 </body>
 </html>
