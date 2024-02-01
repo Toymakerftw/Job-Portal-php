@@ -16,6 +16,35 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'applicant') {
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
   <title>Applicant Dashboard</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+  $(document).ready(function(){
+    $('#searchForm').submit(function(e){
+      e.preventDefault(); // Prevent form submission
+      var searchQuery = $('#searchInput').val(); // Get the search query
+      $.ajax({
+        type: 'GET',
+        url: 'search_jobs.php', // PHP file to handle the search logic
+        data: { search: searchQuery },
+        success: function(response){
+          var jobs = JSON.parse(response); // Parse the JSON response
+          var resultsHtml = '<div class="grid grid-cols-3 gap-4">';
+          jobs.forEach(function(job){
+            resultsHtml += '<div class="bg-white rounded-lg shadow-md p-4">';
+            resultsHtml += '<h3 class="text-lg font-semibold mb-2">' + job.title + '</h3>';
+            resultsHtml += '<p class="text-gray-600">Skills:' + job.skill + '</p>';
+            resultsHtml += '<p class="text-gray-600">Details:' + job.details + '</p>';
+            resultsHtml += '<p class="text-gray-600">Location: ' + job.location + '</p>';
+            resultsHtml += '<p class="text-gray-600">Salary: ' + job.salary + '</p>';
+            resultsHtml += '</div>';
+          });
+          resultsHtml += '</div>';
+          $('#searchResults').html(resultsHtml); // Display the search results as cards
+        }
+      });
+    });
+  });
+</script>
 </head>
 <body class="bg-gray-100">
 
@@ -52,12 +81,14 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'applicant') {
     ?>
 
     <h2 class="text-xl font-semibold mb-2">Search for Jobs</h2>
-    <form action="applicant_dash.php" method="get" class="mb-4">
+    <form id="searchForm" class="mb-4">
       <div class="flex items-center">
-        <input type="text" name="search" placeholder="Search by Job Title" class="rounded-l-full w-full py-2 px-4 mr-0 border-t border-b border-l text-gray-800 border-gray-200 bg-white">
+        <input type="text" id="searchInput" placeholder="Search by Job Title" class="rounded-l-full w-full py-2 px-4 mr-0 border-t border-b border-l text-gray-800 border-gray-200 bg-white">
         <button type="submit" class="bg-black hover:bg-gray-800 text-white font-bold py-2 px-4 rounded-r-full focus:outline-none focus:shadow-outline">Search</button>
       </div>
     </form>
+
+    <div id="searchResults"></div>
 
     <ul>
       <li class="mb-2"><a href="applicant_view_jobs.php" class="w-full bg-black text-white p-2 rounded hover:bg-gray-800">View Jobs</a></li>
