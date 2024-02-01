@@ -36,6 +36,8 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'applicant') {
             resultsHtml += '<p class="text-gray-600">Details:' + job.details + '</p>';
             resultsHtml += '<p class="text-gray-600">Location: ' + job.location + '</p>';
             resultsHtml += '<p class="text-gray-600">Salary: ' + job.salary + '</p>';
+            // Add the apply button with a link to the job application page
+            resultsHtml += '<button class="w-full bg-black text-white p-2 rounded hover:bg-gray-800 mt-4" onclick="applyForJob(' + job.id + ')">Apply</button>';
             resultsHtml += '</div>';
           });
           resultsHtml += '</div>';
@@ -44,7 +46,39 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'applicant') {
       });
     });
   });
+
+      // Function to handle job application
+      function applyForJob(jobId) {
+      // Send an AJAX request to apply_job.php
+      $.ajax({
+        type: 'POST',
+        url: 'apply_job.php',
+        data: { job_id: jobId },
+        success: function(response) {
+          // Display a message or take further action based on the response
+          alert(response); // You can replace this with a more user-friendly notification
+        }
+      });
+    }
+
 </script>
+<style>
+  .container {
+    padding-bottom: 20px; /* Adjust the padding-bottom value as needed */
+  }
+
+  #searchResults {
+    margin-top: 20px; /* Adjust the margin-top value as needed */
+  }
+
+  ul {
+    margin-top: 20px; /* Adjust the margin-top value as needed */
+  }
+
+  li {
+    margin-bottom: 10px; /* Adjust the margin-bottom value as needed */
+  }
+</style>
 </head>
 <body class="bg-gray-100">
 
