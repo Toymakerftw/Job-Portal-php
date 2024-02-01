@@ -14,14 +14,65 @@
     <?php
     session_start(); // Start the session
 
-    if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'applicant') {
-        header("Location: login.php"); // Redirect to the login page if the user is not logged in or is not an applicant
-        exit();
+    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+        $name = $_POST["name"];
+        $address = $_POST["address"];
+        $email = $_POST["email"];
+        $phone = $_POST["phone"];
+        $qualification = $_POST["qualification"];
+        $certifications = $_POST["certifications"];
+        $experience = $_POST["experience"];
+        $salary = $_POST["salary"];
+
+        $resumeName = $_FILES["resume"]["name"];
+        $resumeTmpName = $_FILES["resume"]["tmp_name"];
+        $resumeTargetDir = "resumes/";
+        $resumeTargetFile = $resumeTargetDir . basename($resumeName);
+
+        $pictureName = $_FILES["picture"]["name"];
+        $pictureTmpName = $_FILES["picture"]["tmp_name"];
+        $pictureTargetDir = "pictures/";
+        $pictureTargetFile = $pictureTargetDir . basename($pictureName);
+
+        // Generate unique names for resume and picture files
+        $applicantId = uniqid();
+        $currentDate = date("YmdHis");
+        $resumeNewName = $applicantId . "-" . $currentDate . "-resume." . pathinfo($resumeName, PATHINFO_EXTENSION);
+        $pictureNewName = $applicantId . "-" . $currentDate . "-picture." . pathinfo($pictureName, PATHINFO_EXTENSION);
+
+        // Move uploaded files to the target directory with the new names
+        move_uploaded_file($resumeTmpName, $resumeTargetDir . $resumeNewName);
+        move_uploaded_file($pictureTmpName, $pictureTargetDir . $pictureNewName);
+
+        // Store the applicant details and file paths in the database
+        $servername = "localhost";
+        $username = "root";
+        $password = "";
+        $dbname = "portal";
+
+        // Create connection
+        $conn = new mysqli($servername, $username, $password, $dbname);
+
+        // Check connection
+        if ($conn->connect_error) {
+            die("Connection failed: " . $conn->connect_error);
+        }
+
+        $sql = "INSERT INTO applicants (name, address, email, phone, qualification, certifications, experience, salary, resume_path, picture_path) VALUES ('$name', '$address', '$email', '$phone', '$qualification', '$certifications', '$experience', '$salary', '$resumeTargetDir$resumeNewName', '$pictureTargetDir$pictureNewName')";
+
+        if ($conn->query($sql) === TRUE) {
+            echo "Applicant details submitted successfully";
+        } else {
+            echo "Error: " . $sql . "<br>" . $conn->error;
+        }
+
+        $conn->close();
+    } else {
+        echo "Invalid request";
     }
     ?>
-
     <div class="container mx-auto mt-8 flex justify-center">
-        <form action="submit_applicant.php" method="post" enctype="multipart/form-data" class="bg-white p-8 rounded shadow-md w-full md:w-96">
+        <form action="applicant_details.php" method="post" enctype="multipart/form-data" class="bg-white p-8 rounded shadow-md w-full md:w-96">
             <h2 class="text-2xl font-semibold mb-4">Applicant Details</h2>
             <div class="mb-4">
                 <input type="text" id="name" name="name" class="w-full px-4 py-2 border rounded focus:outline-none focus:border-black" placeholder="Username" required>
