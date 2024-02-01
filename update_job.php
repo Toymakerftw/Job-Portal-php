@@ -29,6 +29,9 @@ if (isset($_GET['id'])) {
       <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
       <link rel="stylesheet" href="styles.css">
       <title>Update Job</title>
+      <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+      <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     </head>
     <body class="bg-gray-100">
       <div class="container mx-auto mt-8">
@@ -42,7 +45,7 @@ if (isset($_GET['id'])) {
             <input type="text" name="skill" value="<?php echo $row['skill']; ?>" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Skill" required>
           </div>
           <div class="mb-4">
-            <input type="number" name="salary" value="<?php echo $row['salary']; ?>" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Salary" required>
+            <input type="text" name="salary" value="<?php echo $row['salary']; ?>" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Salary" required>
           </div>
           <div class="mb-4">
             <input type="text" name="duration" value="<?php echo $row['duration']; ?>" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Duration" required>
@@ -60,6 +63,33 @@ if (isset($_GET['id'])) {
           </div>
         </form>
       </div>
+      <script>
+        $(document).ready(function() {
+          $('#updateJobForm').submit(function(e) {
+            e.preventDefault();
+            var formData = $(this).serialize();
+
+            $.ajax({
+              type: 'POST',
+              url: 'process_update_job.php',
+              data: formData,
+              success: function(response) {
+            // Display a toast message for success
+            Toastify({
+              text: "Success! Job Updated",
+              duration: 3000,
+              gravity: "bottom", // Add the toast message at the bottom of the page
+              position: 'right', // Position the toast message on the right side
+              backgroundColor: "green", // Set the background color of the toast message
+            }).showToast();
+              },
+              error: function() {
+                alert('An error occurred while updating the job.');
+              }
+            });
+          });
+        });
+      </script>
     </body>
     </html>
     <?php
