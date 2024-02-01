@@ -7,72 +7,102 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="styles.css"> <!-- Include your custom styles if needed -->
     <title>Applicant Details</title>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 </head>
 
 <body class="bg-gray-100">
 
-    <?php
-    session_start(); // Start the session
+<?php
+session_start(); // Start the session
 
-    if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        $name = $_POST["name"];
-        $address = $_POST["address"];
-        $email = $_POST["email"];
-        $phone = $_POST["phone"];
-        $qualification = $_POST["qualification"];
-        $certifications = $_POST["certifications"];
-        $experience = $_POST["experience"];
-        $salary = $_POST["salary"];
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $name = $_POST["name"];
+    $address = $_POST["address"];
+    $email = $_POST["email"];
+    $phone = $_POST["phone"];
+    $qualification = $_POST["qualification"];
+    $certifications = $_POST["certifications"];
+    $experience = $_POST["experience"];
+    $salary = $_POST["salary"];
 
-        $resumeName = $_FILES["resume"]["name"];
-        $resumeTmpName = $_FILES["resume"]["tmp_name"];
-        $resumeTargetDir = "resumes/";
-        $resumeTargetFile = $resumeTargetDir . basename($resumeName);
+    $resumeName = $_FILES["resume"]["name"];
+    $resumeTmpName = $_FILES["resume"]["tmp_name"];
+    $resumeTargetDir = "resumes/";
+    $resumeTargetFile = $resumeTargetDir . basename($resumeName);
 
-        $pictureName = $_FILES["picture"]["name"];
-        $pictureTmpName = $_FILES["picture"]["tmp_name"];
-        $pictureTargetDir = "pictures/";
-        $pictureTargetFile = $pictureTargetDir . basename($pictureName);
+    $pictureName = $_FILES["picture"]["name"];
+    $pictureTmpName = $_FILES["picture"]["tmp_name"];
+    $pictureTargetDir = "pictures/";
+    $pictureTargetFile = $pictureTargetDir . basename($pictureName);
 
-        // Generate unique names for resume and picture files
-        $applicantId = uniqid();
-        $currentDate = date("YmdHis");
-        $resumeNewName = $applicantId . "-" . $currentDate . "-resume." . pathinfo($resumeName, PATHINFO_EXTENSION);
-        $pictureNewName = $applicantId . "-" . $currentDate . "-picture." . pathinfo($pictureName, PATHINFO_EXTENSION);
+    // Generate unique names for resume and picture files
+    $applicantId = uniqid();
+    $currentDate = date("YmdHis");
+    $resumeNewName = $applicantId . "-" . $currentDate . "-resume." . pathinfo($resumeName, PATHINFO_EXTENSION);
+    $pictureNewName = $applicantId . "-" . $currentDate . "-picture." . pathinfo($pictureName, PATHINFO_EXTENSION);
 
-        // Move uploaded files to the target directory with the new names
-        move_uploaded_file($resumeTmpName, $resumeTargetDir . $resumeNewName);
-        move_uploaded_file($pictureTmpName, $pictureTargetDir . $pictureNewName);
+    // Move uploaded files to the target directory with the new names
+    move_uploaded_file($resumeTmpName, $resumeTargetDir . $resumeNewName);
+    move_uploaded_file($pictureTmpName, $pictureTargetDir . $pictureNewName);
 
-        // Store the applicant details and file paths in the database
-        $servername = "localhost";
-        $username = "root";
-        $password = "";
-        $dbname = "portal";
+    // Store the applicant details and file paths in the database
+    $servername = "localhost";
+    $username = "root";
+    $password = "";
+    $dbname = "portal";
 
-        // Create connection
-        $conn = new mysqli($servername, $username, $password, $dbname);
+    // Create connection
+    $conn = new mysqli($servername, $username, $password, $dbname);
 
-        // Check connection
-        if ($conn->connect_error) {
-            die("Connection failed: " . $conn->connect_error);
-        }
-
-        $sql = "INSERT INTO applicants (name, address, email, phone, qualification, certifications, experience, salary, resume_path, picture_path) VALUES ('$name', '$address', '$email', '$phone', '$qualification', '$certifications', '$experience', '$salary', '$resumeTargetDir$resumeNewName', '$pictureTargetDir$pictureNewName')";
-
-        if ($conn->query($sql) === TRUE) {
-            echo "Applicant details submitted successfully";
-        } else {
-            echo "Error: " . $sql . "<br>" . $conn->error;
-        }
-
-        $conn->close();
-    } else {
-        echo "Invalid request";
+    // Check connection
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
     }
-    ?>
+
+    // Check if the email already exists in the database
+    $checkEmailQuery = "SELECT * FROM applicants WHERE email = '$email'";
+    $result = $conn->query($checkEmailQuery);
+
+    if ($result->num_rows > 0) {
+        // Applicant already exists, perform update
+        $updateQuery = "UPDATE applicants SET 
+                        name = '$name',
+                        address = '$address',
+                        phone = '$phone',
+                        qualification = '$qualification',
+                        certifications = '$certifications',
+                        experience = '$experience',
+                        salary = '$salary',
+                        resume_path = '$resumeTargetDir$resumeNewName',
+                        picture_path = '$pictureTargetDir$pictureNewName'
+                        WHERE email = '$email'";
+
+        if ($conn->query($updateQuery) === TRUE) {
+            echo json_encode(['message' => 'Applicant details updated successfully']);
+        } else {
+            echo json_encode(['error' => 'Error updating record: ' . $conn->error]);
+        }
+    } else {
+        // Applicant does not exist, perform insert
+        $insertQuery = "INSERT INTO applicants (name, address, email, phone, qualification, certifications, experience, salary, resume_path, picture_path) VALUES ('$name', '$address', '$email', '$phone', '$qualification', '$certifications', '$experience', '$salary', '$resumeTargetDir$resumeNewName', '$pictureTargetDir$pictureNewName')";
+
+        if ($conn->query($insertQuery) === TRUE) {
+            echo json_encode(['message' => 'Applicant details submitted successfully']);
+        } else {
+            echo json_encode(['error' => 'Error inserting record: ' . $conn->error]);
+        }
+    }
+
+    $conn->close();
+} else {
+    //echo "Invalid request";
+}
+?>
+
     <div class="container mx-auto mt-8 flex justify-center">
-        <form action="applicant_details.php" method="post" enctype="multipart/form-data" class="bg-white p-8 rounded shadow-md w-full md:w-96">
+    <form id="updateApplicantdetailsForm" action="applicant_details.php" method="post" enctype="multipart/form-data" class="bg-white p-8 rounded shadow-md w-full md:w-96">
             <h2 class="text-2xl font-semibold mb-4">Applicant Details</h2>
             <div class="mb-4">
                 <input type="text" id="name" name="name" class="w-full px-4 py-2 border rounded focus:outline-none focus:border-black" placeholder="Username" required>
@@ -121,6 +151,34 @@
             </div>
         </form>
     </div>
+    <script>
+        $(document).ready(function() {
+          $('#updateApplicantdetailsForm').submit(function(e) {
+            e.preventDefault();
+            var formData = $(this).serialize();
+
+            $.ajax({
+              type: 'POST',
+              url: 'applicant_details.php',
+              data: formData,
+              success: function(response) {
+            // Display a toast message for success
+            Toastify({
+              text: "Success! Details Updated",
+              duration: 3000,
+              gravity: "bottom", // Add the toast message at the bottom of the page
+              position: 'right', // Position the toast message on the right side
+              backgroundColor: "green", // Set the background color of the toast message
+            }).showToast();
+              },
+              error: function() {
+                alert('An error occurred while updating the job.');
+              }
+            });
+          });
+        });
+      </script>
+
 </body>
 
 </html>
